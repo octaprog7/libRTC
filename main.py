@@ -1,7 +1,7 @@
 import micropython
 from random import randint
 from machine import I2C, Pin
-from ds3231maxim import DS3221, status_ds3231
+from ds3231mod import DS3221, status_ds3231
 from PCF8563mod import PCF8563
 from sensor_pack_2.irtc import rtc_alarm_time   # , rtc_time
 from sensor_pack_2.bus_service import I2cAdapter
@@ -26,8 +26,8 @@ def handle_interrupt(pin):
 pin_irq = Pin(22, mode=Pin.IN, pull=Pin.PULL_UP)
 pin_irq.irq(trigger=Pin.IRQ_FALLING, handler=handle_interrupt)
 
-# True при использовании DS3231
-# False при использовании PCF8563
+# 0 при использовании DS3231
+# 1 при использовании PCF8563
 clock_model = 1
 
 if __name__ == '__main__':

@@ -14,9 +14,6 @@ from sensor_pack_2.base_sensor import DeviceEx, Iterator
 во время доступа к записи выполняется логическое И.'''
 
 # состояние RTC:
-#   * ext_clock_mode   - 0 - тактирование от внутреннего генератора; 1 - тактирование от внешнего генератора (EXT_CLK).
-#   * clock_stopped- 0 - тактирование RTC работает; 1 - тактирование RTC НЕ работает, часы стоят!
-#   * POR_disable-   0 - Функция отмены сброса (POR) при включении питания отключена, установите в логический 0 для нормальной работы; 1 - отмена сброса при включении питания может(!) быть включена!
 #   * timer_int  - прерывание активно, когда активен(1) TF (в зависимости от состояния флага TIE)
 #   * alarm_flag -  0 (чтение) флаг тревоги неактивен
 #                   1 (чтение) флаг тревоги активен
@@ -122,11 +119,12 @@ class PCF8563(DeviceEx, IRTCwAlarms, Iterator):
             return
         self._set_status_flags(value)
 
-    def set_control(self, raw_value: int) -> int:
+    def set_control(self, value: [int, tuple]):
         """Записывает байт value в регистр состояния/управления 2.
         Читайте документацию на микросхему 8.3.2 Register Control_status_2!"""
-        self.set_status(raw_value)
-        return 0
+        if isinstance(value, int):
+            self.set_status(value)
+        raise NotImplemented
 
     def _set_status_flags(self, flags: status_pcf8563):
         """Устанавливает значения флагов в регистре состояния, если в кортеже они не равны None!
@@ -135,23 +133,15 @@ class PCF8563(DeviceEx, IRTCwAlarms, Iterator):
         _sts = self.get_status(raw=True)
         # номера битов в регистре состояния, значения которых нужно изменить!
         bit_numb = range(4, -1, -1)
-        # возвращает маску по номеру бита для выделения или обнуления, если flags[idx] is None or False
-        # _get_mask = lambda idx: 1 << bit_numb[idx] if flags[idx] else ~(1 << bit_numb[idx])
-        # flg_ind = range(len(bit_numb))  # индексы кортежа flags
-        # генератор маски с учетом None в элементах кортежа
-        # bit_mask_gen = (_get_mask(index) for index in flg_ind if not flags[index] is None)
-        # for mask in bit_mask_gen:
-        #    if mask < 0:
-        #        _sts &= mask    # обнуляю бит
-        #    else:
-        #        _sts |= mask    # бит в 1
         result = change_bit_by_flags(_sts, bit_numb, flags)
         self.set_status(result)
 
     def get_control(self, raw: bool = True) -> [int, tuple]:
         """Возвращает байт из регистра управления.
         Returns byte from the control register 2."""
-        return 0x1F & self.read_reg(0x01, 1)[0]
+        if raw:
+            return 0x1F & self.read_reg(0x01, 1)[0]
+        raise NotImplemented
 
     # --- IRTCwAlarms ---
     def read_raw_alarm(self, alarm_id: int = 0) -> bytearray:
@@ -190,13 +180,11 @@ class PCF8563(DeviceEx, IRTCwAlarms, Iterator):
             _day_of_month = None
 
         item = src[3]
-        # print(f"DBG:src[3] 0x{src[3]:x}")
         alarm_disabled = disable_mask & item
         _day_of_week = bcd_to_int(0x07 & item)
         if alarm_disabled:
             _day_of_week = None
 
-        # print(f"DBG: {_day_of_month}\t{_day_of_week}")
         return rtc_alarm_time(date_day=_day_of_month if not _day_of_month is None else _day_of_week,
                               hour=_hour, min=_min)
 
@@ -235,7 +223,6 @@ class PCF8563(DeviceEx, IRTCwAlarms, Iterator):
         if raw:
             return _raw
         af = bool(0x08 & _raw)
-        # return status_pcf8563(timer_int=None, alarm_flag=af, timer_flag=None, alarm_int_enabled=None, timer_int_enabled=None)
         return af,
 
     def __next__(self) -> tuple:

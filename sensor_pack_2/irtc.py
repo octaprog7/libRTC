@@ -164,7 +164,11 @@ class IRTC:
         raise NotImplemented
 
     def get_control(self, raw: bool = True) -> [int, tuple]:
-        """Возвращает байт из регистра управления."""
+        """Возвращает содержимое регистра управления, если raw is True, иначе кортеж или именованный кортеж"""
+        raise NotImplemented
+
+    def set_control(self, value: [int, tuple]):
+        """Устанавливает содержимое регистра управления."""
         raise NotImplemented
 
 

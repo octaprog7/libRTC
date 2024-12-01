@@ -171,12 +171,16 @@ class DS3221(DeviceEx, IRTCwAlarms, Iterator):
     def get_control(self, raw: bool = True) -> [int, tuple]:
         """Возвращает байт из регистра управления.
         Returns byte from the control register."""
-        return self.read_reg(0x0E, 1)[0]
+        if raw:
+            return self.read_reg(0x0E, 1)[0]
+        raise NotImplemented
 
-    def set_control(self, raw_value: int) -> int:
+    def set_control(self, value: [int, tuple]):
         """Записывает байт value в регистр управления.
         Читайте документацию на микросхему (Control Register (0Eh))!"""
-        return self.write_reg(0x0E, raw_value, 1)
+        if isinstance(value, int):
+            return self.write_reg(0x0E, value, 1)
+        raise  NotImplemented
 
     def get_stop_event(self, clear: bool = True) -> bool:
         """Возвращает Истина, если произошел сбой тактирования часов, что может говорить о неверном времени и
