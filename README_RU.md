@@ -41,5 +41,5 @@
 ![alt text](https://github.com/octaprog7/libRTC/blob/master/pics/8563_irq_handled.png)
 
 # Тесты: часы реального времени – DS3231 / PCF8563 / MCP79400 / DS1307
-![alt text](https://www.switchdoc.com/2014/12/benchmarks-realtime-clocks-ds3231-pcf8563-mcp79400-ds1307/)
+https://www.switchdoc.com/2014/12/benchmarks-realtime-clocks-ds3231-pcf8563-mcp79400-ds1307/
 
