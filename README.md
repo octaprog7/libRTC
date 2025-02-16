@@ -34,7 +34,8 @@ Depends on:
 P.S. Don't forget about the 'quality' of the voltage supplying the RTC!
 
 ## For soldering enthusiasts
-In the folder hardware/rtc_bq32000, there is a project of the RTC board based on BQ32000, created in KiCad 8.0.8.
+* in the folder hardware/rtc_bq32000, there is a project of the RTC board based on BQ32000, created in KiCad 8.0.8.
+* in the folder hardware/rtc_mcp7940, there is a project of the RTC board based on MCP7940, created in KiCad 8.0.8.
 
 # Photos
 ## Breadboard
